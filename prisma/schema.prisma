@@ -1,0 +1,248 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  SALES
+  WAREHOUSE
+  ACCOUNTANT
+}
+
+model User {
+  id         String              @id @default(cuid())
+  name       String
+  email      String              @unique
+  password   String
+  role       Role                @default(SALES)
+  outletId   String?
+  outlet     Outlet?             @relation(fields: [outletId], references: [id])
+  active     Boolean             @default(true)
+  createdAt  DateTime            @default(now())
+  sessions   Session[]
+  accounts   Account[]
+  sales      Sale[]
+  grns       GoodsReceivedNote[]
+  dispatches StockDispatch[]
+}
+
+model Outlet {
+  id             String              @id @default(cuid())
+  name           String
+  address        String?
+  phone          String?
+  active         Boolean             @default(true)
+  users          User[]
+  stock          StockItem[]
+  sales          Sale[]
+  grns           GoodsReceivedNote[]
+  fromDispatches StockDispatch[]     @relation("FromOutlet")
+  createdAt      DateTime            @default(now())
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  products Product[]
+}
+
+model Product {
+  id            String         @id @default(cuid())
+  code          String         @unique
+  name          String
+  categoryId    String
+  category      Category       @relation(fields: [categoryId], references: [id])
+  unit          String
+  costPrice     Decimal        @default(0) @db.Decimal(18, 4)
+  sellPrice     Decimal        @default(0) @db.Decimal(18, 4)
+  reorderLevel  Int            @default(0)
+  active        Boolean        @default(true)
+  stock         StockItem[]
+  saleLines     SaleLine[]
+  grnLines      GrnLine[]
+  dispatchLines DispatchLine[]
+  createdAt     DateTime       @default(now())
+}
+
+model StockItem {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  outletId  String
+  outlet    Outlet   @relation(fields: [outletId], references: [id])
+  quantity  Decimal  @default(0) @db.Decimal(18, 4)
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, outletId])
+}
+
+model Customer {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  contact     String?
+  address     String?
+  email       String?
+  creditLimit Decimal  @default(0) @db.Decimal(18, 4)
+  creditDays  Int      @default(30)
+  balance     Decimal  @default(0) @db.Decimal(18, 4)
+  active      Boolean  @default(true)
+  sales       Sale[]
+  createdAt   DateTime @default(now())
+}
+
+enum SaleStatus {
+  DRAFT
+  CONFIRMED
+  DISPATCHED
+  PARTIALLY_PAID
+  PAID
+  CANCELLED
+}
+
+model Sale {
+  id         String     @id @default(cuid())
+  number     String     @unique
+  outletId   String
+  outlet     Outlet     @relation(fields: [outletId], references: [id])
+  customerId String
+  customer   Customer   @relation(fields: [customerId], references: [id])
+  userId     String
+  user       User       @relation(fields: [userId], references: [id])
+  date       DateTime   @default(now())
+  dueDate    DateTime
+  status     SaleStatus @default(DRAFT)
+  subtotal   Decimal    @db.Decimal(18, 4)
+  taxRate    Decimal    @default(0) @db.Decimal(8, 4)
+  taxAmount  Decimal    @default(0) @db.Decimal(18, 4)
+  total      Decimal    @db.Decimal(18, 4)
+  amountPaid Decimal    @default(0) @db.Decimal(18, 4)
+  notes      String?
+  lpoNumber  String?
+  lines      SaleLine[]
+  documents  Document[]
+  createdAt  DateTime   @default(now())
+}
+
+model SaleLine {
+  id        String  @id @default(cuid())
+  saleId    String
+  sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Decimal @db.Decimal(18, 4)
+  unitPrice Decimal @db.Decimal(18, 4)
+  total     Decimal @db.Decimal(18, 4)
+}
+
+model GoodsReceivedNote {
+  id        String    @id @default(cuid())
+  number    String    @unique
+  outletId  String
+  outlet    Outlet    @relation(fields: [outletId], references: [id])
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  supplier  String
+  date      DateTime  @default(now())
+  lpoRef    String?
+  notes     String?
+  lines     GrnLine[]
+  createdAt DateTime  @default(now())
+}
+
+model GrnLine {
+  id        String            @id @default(cuid())
+  grnId     String
+  grn       GoodsReceivedNote @relation(fields: [grnId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product           @relation(fields: [productId], references: [id])
+  quantity  Decimal           @db.Decimal(18, 4)
+  unitCost  Decimal           @db.Decimal(18, 4)
+}
+
+model StockDispatch {
+  id           String         @id @default(cuid())
+  number       String         @unique
+  fromOutletId String
+  fromOutlet   Outlet         @relation("FromOutlet", fields: [fromOutletId], references: [id])
+  toOutletId   String?
+  userId       String
+  user         User           @relation(fields: [userId], references: [id])
+  date         DateTime       @default(now())
+  reason       String?
+  lines        DispatchLine[]
+  createdAt    DateTime       @default(now())
+}
+
+model DispatchLine {
+  id         String        @id @default(cuid())
+  dispatchId String
+  dispatch   StockDispatch @relation(fields: [dispatchId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product       @relation(fields: [productId], references: [id])
+  quantity   Decimal       @db.Decimal(18, 4)
+}
+
+enum DocumentType {
+  INVOICE
+  DELIVERY_NOTE
+  WAYBILL
+  GRN
+  LPO_ACKNOWLEDGEMENT
+  STORE_VOUCHER
+}
+
+model Document {
+  id        String       @id @default(cuid())
+  saleId    String
+  sale      Sale         @relation(fields: [saleId], references: [id])
+  type      DocumentType
+  url       String?
+  createdAt DateTime     @default(now())
+}
+
+model Settings {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}

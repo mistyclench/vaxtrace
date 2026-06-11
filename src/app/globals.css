@@ -1,8 +1,20 @@
 @import "tailwindcss";
 
+/* ─── Class-based dark mode for Tailwind v4 ─── */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─── Font CSS variables (set dynamically by ThemeProvider) ─── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --app-font:        system-ui, -apple-system, sans-serif;
+  --app-font-size:   14px;
+  --app-font-weight: 400;
+  --background: #f9fafb;
+  --foreground: #111827;
+}
+
+html.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
 }
 
 @theme inline {
@@ -10,24 +22,32 @@
   --color-foreground: var(--foreground);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--app-font);
+  font-size: var(--app-font-size);
+  font-weight: var(--app-font-weight);
 }
 
+/* ─── Hide scrollbar but keep scroll functional ─── */
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── FEFO alert pulse ─── */
+@keyframes fefo-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+.fefo-pulse { animation: fefo-pulse 2s ease-in-out infinite; }
+
+/* ─── Print ─── */
 @media print {
-  .no-print {
-    display: none !important;
-  }
-  .print-only {
-    display: block !important;
-  }
+  .no-print   { display: none !important; }
+  .print-only { display: block !important; }
 }

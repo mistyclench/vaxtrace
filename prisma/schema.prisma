@@ -77,6 +77,7 @@ model Outlet {
   sales          Sale[]
   grns           GoodsReceivedNote[]
   fromDispatches StockDispatch[]     @relation("FromOutlet")
+  tempLogs       TemperatureLog[]
   createdAt      DateTime            @default(now())
 }
 
@@ -87,21 +88,22 @@ model Category {
 }
 
 model Product {
-  id            String         @id @default(cuid())
-  code          String         @unique
+  id            String           @id @default(cuid())
+  code          String           @unique
   name          String
   categoryId    String
-  category      Category       @relation(fields: [categoryId], references: [id])
+  category      Category         @relation(fields: [categoryId], references: [id])
   unit          String
-  costPrice     Decimal        @default(0) @db.Decimal(18, 4)
-  sellPrice     Decimal        @default(0) @db.Decimal(18, 4)
-  reorderLevel  Int            @default(0)
-  active        Boolean        @default(true)
+  costPrice     Decimal          @default(0) @db.Decimal(18, 4)
+  sellPrice     Decimal          @default(0) @db.Decimal(18, 4)
+  reorderLevel  Int              @default(0)
+  active        Boolean          @default(true)
   stock         StockItem[]
   saleLines     SaleLine[]
   grnLines      GrnLine[]
   dispatchLines DispatchLine[]
-  createdAt     DateTime       @default(now())
+  tempLogs      TemperatureLog[]
+  createdAt     DateTime         @default(now())
 }
 
 model StockItem {
@@ -191,13 +193,15 @@ model GoodsReceivedNote {
 }
 
 model GrnLine {
-  id        String            @id @default(cuid())
-  grnId     String
-  grn       GoodsReceivedNote @relation(fields: [grnId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product           @relation(fields: [productId], references: [id])
-  quantity  Decimal           @db.Decimal(18, 4)
-  unitCost  Decimal           @db.Decimal(18, 4)
+  id          String            @id @default(cuid())
+  grnId       String
+  grn         GoodsReceivedNote @relation(fields: [grnId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product           @relation(fields: [productId], references: [id])
+  quantity    Decimal           @db.Decimal(18, 4)
+  unitCost    Decimal           @db.Decimal(18, 4)
+  batchNumber String?
+  expiryDate  DateTime?
 }
 
 model StockDispatch {
@@ -245,4 +249,16 @@ model Settings {
   id    String @id @default(cuid())
   key   String @unique
   value String
+}
+
+model TemperatureLog {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  outletId    String
+  outlet      Outlet   @relation(fields: [outletId], references: [id])
+  minTemp     Float
+  maxTemp     Float
+  currentTemp Float
+  recordedAt  DateTime @default(now())
 }

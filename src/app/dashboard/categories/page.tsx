@@ -32,11 +32,11 @@ export default function CategoriesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Categories</h1>
 
       <form onSubmit={handleAdd} className="flex gap-3 max-w-md">
         <input
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-slate-100"
           placeholder="New category name"
           value={name}
           onChange={e => setName(e.target.value)}
@@ -53,17 +53,17 @@ export default function CategoriesPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {categories.map(c => (
-          <div key={c.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Tag className="w-5 h-5 text-blue-600" />
+          <div key={c.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-5 flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-lg flex items-center justify-center">
+              <Tag className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <p className="font-semibold text-gray-900">{c.name}</p>
+              <p className="font-semibold text-gray-900 dark:text-slate-100">{c.name}</p>
             </div>
           </div>
         ))}
         {categories.length === 0 && (
-          <p className="text-gray-400 col-span-4">No categories yet</p>
+          <p className="text-gray-400 dark:text-slate-500 col-span-4">No categories yet</p>
         )}
       </div>
     </div>

@@ -49,9 +49,9 @@ export default function StockTakingPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Stock Taking</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Stock Taking</h1>
         <select
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-slate-100"
           value={selectedOutlet}
           onChange={e => setSelectedOutlet(e.target.value)}
         >
@@ -59,40 +59,40 @@ export default function StockTakingPage() {
         </select>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700">
             <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Product</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Code</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Unit</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-600">System Qty</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-600">Physical Count</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-600">Variance</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Product</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Code</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Unit</th>
+              <th className="text-right px-4 py-3 font-medium text-gray-600 dark:text-slate-400">System Qty</th>
+              <th className="text-right px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Physical Count</th>
+              <th className="text-right px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Variance</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
             {stock.map(item => {
               const systemQty = Number(item.quantity);
               const physical = adjustments[item.id] !== undefined ? parseFloat(adjustments[item.id] || "0") : systemQty;
               const variance = physical - systemQty;
               return (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium">{item.product.name}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-gray-500">{item.product.code}</td>
-                  <td className="px-4 py-3 text-gray-500">{item.product.unit}</td>
-                  <td className="px-4 py-3 text-right font-bold">{systemQty}</td>
+                <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                  <td className="px-4 py-3 font-medium text-gray-900 dark:text-slate-100">{item.product.name}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-gray-500 dark:text-slate-400">{item.product.code}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-slate-400">{item.product.unit}</td>
+                  <td className="px-4 py-3 text-right font-bold text-gray-900 dark:text-slate-100">{systemQty}</td>
                   <td className="px-4 py-3 text-right">
                     <input
                       type="number"
                       step="0.01"
-                      className="w-28 text-right border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-28 text-right border border-gray-300 dark:border-slate-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-slate-100"
                       value={adjustments[item.id] ?? systemQty}
                       onChange={e => setAdjustments(a => ({ ...a, [item.id]: e.target.value }))}
                     />
                   </td>
-                  <td className={`px-4 py-3 text-right font-medium ${adjustments[item.id] !== undefined ? (variance > 0 ? "text-green-600" : variance < 0 ? "text-red-600" : "text-gray-500") : "text-gray-400"}`}>
+                  <td className={`px-4 py-3 text-right font-medium ${adjustments[item.id] !== undefined ? (variance > 0 ? "text-green-600" : variance < 0 ? "text-red-600" : "text-gray-500 dark:text-slate-400") : "text-gray-400 dark:text-slate-500"}`}>
                     {adjustments[item.id] !== undefined ? (variance > 0 ? `+${variance.toFixed(2)}` : variance.toFixed(2)) : "-"}
                   </td>
                   <td className="px-4 py-3">
@@ -110,7 +110,7 @@ export default function StockTakingPage() {
                 </tr>
               );
             })}
-            {stock.length === 0 && <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400">No stock records for this outlet</td></tr>}
+            {stock.length === 0 && <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400 dark:text-slate-500">No stock records for this outlet</td></tr>}
           </tbody>
         </table>
       </div>

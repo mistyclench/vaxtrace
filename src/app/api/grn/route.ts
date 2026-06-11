@@ -13,6 +13,8 @@ const grnSchema = z.object({
     productId: z.string(),
     quantity: z.number().positive(),
     unitCost: z.number().min(0),
+    batchNumber: z.string().optional(),
+    expiryDate: z.string().optional(), // ISO date string from date input
   })).min(1),
 });
 
@@ -23,7 +25,7 @@ export async function GET() {
   const grns = await prisma.goodsReceivedNote.findMany({
     include: { outlet: true, user: true, lines: { include: { product: true } } },
     orderBy: { createdAt: "desc" },
-    take: 100,
+    take: 200,
   });
   return NextResponse.json(grns);
 }
@@ -53,6 +55,8 @@ export async function POST(req: NextRequest) {
             productId: l.productId,
             quantity: l.quantity,
             unitCost: l.unitCost,
+            batchNumber: l.batchNumber || null,
+            expiryDate: l.expiryDate ? new Date(l.expiryDate) : null,
           })),
         },
       },

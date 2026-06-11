@@ -220,7 +220,7 @@ export default function TemperaturePage() {
 
       {/* Log table */}
       {logs.length > 0 && (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-x-auto">
           <div className="px-4 py-3 border-b border-gray-200 dark:border-slate-700">
             <h2 className="font-semibold text-gray-800 dark:text-slate-200">Reading Log ({logs.length})</h2>
           </div>

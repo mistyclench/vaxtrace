@@ -251,6 +251,38 @@ model Settings {
   value String
 }
 
+// Configurable permissions per role (managed by Super Admin)
+model RolePermission {
+  id       String @id @default(cuid())
+  role     String // matches Role enum values or custom role names
+  resource String // e.g. "sales", "inventory", "users"
+  action   String // e.g. "view", "create", "edit", "delete", "approve"
+
+  @@unique([role, resource, action])
+  @@index([role])
+}
+
+// Configurable workflow approvals
+model WorkflowConfig {
+  id          String               @id @default(cuid())
+  name        String
+  trigger     String               @unique // "sale.confirm", "grn.create", "dispatch.create"
+  description String?
+  active      Boolean              @default(false)
+  steps       WorkflowConfigStep[]
+  createdAt   DateTime             @default(now())
+}
+
+model WorkflowConfigStep {
+  id           String         @id @default(cuid())
+  workflowId   String
+  workflow     WorkflowConfig @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  stepOrder    Int
+  approverRole String
+  label        String
+  required     Boolean        @default(true)
+}
+
 model TemperatureLog {
   id          String   @id @default(cuid())
   productId   String

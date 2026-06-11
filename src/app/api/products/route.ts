@@ -20,12 +20,17 @@ export async function GET(req: NextRequest) {
 
   const search = req.nextUrl.searchParams.get("search") ?? "";
   const categoryId = req.nextUrl.searchParams.get("categoryId");
+  const userRole = (session.user as any).role as string;
+  const userOutletId = (session.user as any).outletId as string | undefined;
 
   const products = await prisma.product.findMany({
     where: {
       active: true,
       ...(search && { name: { contains: search, mode: "insensitive" } }),
       ...(categoryId && { categoryId }),
+      ...(userRole === "SALES" && userOutletId && {
+        stock: { some: { outletId: userOutletId, quantity: { gt: 0 } } },
+      }),
     },
     include: { category: true, stock: { include: { outlet: true } } },
     orderBy: { name: "asc" },

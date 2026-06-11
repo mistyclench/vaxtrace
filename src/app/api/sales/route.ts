@@ -26,11 +26,16 @@ export async function GET(req: NextRequest) {
 
   const status = req.nextUrl.searchParams.get("status");
   const customerId = req.nextUrl.searchParams.get("customerId");
+  const userRole = (session.user as any).role as string;
+  const userOutletId = (session.user as any).outletId as string | undefined;
+  const userId = (session.user as any).id as string;
 
   const sales = await prisma.sale.findMany({
     where: {
       ...(status && { status: status as any }),
       ...(customerId && { customerId }),
+      ...(userRole === "SALES" && userOutletId && { outletId: userOutletId }),
+      ...(userRole === "SALES" && { userId }),
     },
     include: { customer: true, outlet: true, user: true },
     orderBy: { createdAt: "desc" },

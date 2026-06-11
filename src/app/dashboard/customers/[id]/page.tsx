@@ -72,7 +72,7 @@ export default function CustomerDetailPage() {
       </div>
 
       {/* Statement */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="font-semibold">Account Statement</h2>
         </div>

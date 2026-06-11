@@ -7,8 +7,14 @@ export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const userRole = (session.user as any).role as string;
+  const userOutletId = (session.user as any).outletId as string | undefined;
+
   const outlets = await prisma.outlet.findMany({
-    where: { active: true },
+    where: {
+      active: true,
+      ...(userRole === "SALES" && userOutletId && { id: userOutletId }),
+    },
     orderBy: { name: "asc" },
   });
   return NextResponse.json(outlets);

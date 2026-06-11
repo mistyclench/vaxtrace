@@ -98,7 +98,7 @@ export default function FEFOPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-x-auto">
         {loading ? (
           <div className="py-16 text-center text-gray-400 dark:text-slate-500">Loading…</div>
         ) : filtered.length === 0 ? (

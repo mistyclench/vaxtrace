@@ -95,7 +95,7 @@ export default function DashboardPage() {
       )}
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KpiCard
           title="Total Revenue"
           value={format(data.totalRevenue)}
@@ -126,7 +126,8 @@ export default function DashboardPage() {
         {/* Recent Sales */}
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
           <h2 className="font-semibold text-gray-900 dark:text-slate-100 mb-4">Recent Sales</h2>
-          <div className="space-y-3">
+          {/* Desktop list / Mobile cards */}
+          <div className="hidden sm:block space-y-3">
             {data.recentSales.length === 0 && (
               <p className="text-gray-500 dark:text-slate-400 text-sm">No sales yet</p>
             )}
@@ -142,6 +143,27 @@ export default function DashboardPage() {
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[sale.status] ?? "bg-gray-100"}`}>
                     {sale.status}
                   </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Mobile cards */}
+          <div className="sm:hidden space-y-3">
+            {data.recentSales.length === 0 && (
+              <p className="text-gray-500 dark:text-slate-400 text-sm">No sales yet</p>
+            )}
+            {data.recentSales.map(sale => (
+              <div key={sale.id} className="rounded-lg border border-gray-100 dark:border-slate-700 p-3 bg-gray-50 dark:bg-slate-700/40">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="font-medium text-sm text-gray-900 dark:text-slate-100">{sale.number}</p>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[sale.status] ?? "bg-gray-100"}`}>
+                    {sale.status}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-slate-400">{sale.customer.name}</p>
+                <div className="flex items-center justify-between mt-1">
+                  <p className="text-xs text-gray-400 dark:text-slate-500">{formatDate(sale.date)}</p>
+                  <p className="font-semibold text-sm text-gray-900 dark:text-slate-100">{format(sale.total)}</p>
                 </div>
               </div>
             ))}
